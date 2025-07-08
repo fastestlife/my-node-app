@@ -33,10 +33,11 @@ async function fetchMetadataFromSheets(fileName, auth) {
           title: row[1],
           description: row[2],
           tags: row[3],
-          thumbnailFileName: row[4],
+          thumbnailFileName: row[4] || null,
           category: row[5],
           visibility: row[6],
           playlist: row[7],
+          thumbnailFileId: row[8] || null,
         };
       }
     }

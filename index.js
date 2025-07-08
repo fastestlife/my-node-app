@@ -90,13 +90,13 @@ app.post('/upload', async (req, res) => {
 
     // 4. 썸네일 파일이 있다면 → 다운로드 후 업로드
     if (metadata.thumbnailFileId) {
-      console.log('🖼️ 썸네일 파일 다운로드 중...');
-      const { filePath: thumbnailPath } = await downloadThumbnail(metadata.thumbnailFileId, auth);
-      console.log('✅ 썸네일 다운로드 완료:', thumbnailPath);
-      
-      console.log('📤 썸네일 유튜브 업로드 중...');
-      await uploadThumbnailToYouTube(videoId, thumbnailPath, auth);
-      console.log('✅ 썸네일 업로드 완료');
+     console.log('🖼️ 썸네일 파일 다운로드 중...');
+     const { filePath: thumbnailPath } = await downloadThumbnail(metadata.thumbnailFileId, auth);
+     console.log('✅ 썸네일 다운로드 완료:', thumbnailPath);
+  
+     console.log('📤 썸네일 유튜브 업로드 중...');
+     await uploadThumbnailToYouTube(videoId, thumbnailPath, auth);
+     console.log('✅ 썸네일 업로드 완료');
     }
 
     // 5. 업로드 성공 후 FINISH 폴더로 이동
