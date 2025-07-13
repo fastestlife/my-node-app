@@ -11,7 +11,7 @@ async function fetchMetadataFromSheets(fileName, auth) {
 
   const spreadsheetId = '1kqemYKybH00eKY5Qpa7lisYycrC6cfjGkcXOZlu7BtI'; // D시트 ID
   const sheetName = 'D_Sheet';
-  const range = `${sheetName}!A2:H`;
+  const range = `${sheetName}!A2:I`;
 
   try {
     const response = await sheets.spreadsheets.values.get({

@@ -27,11 +27,23 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('Server is up and running!');
 });
 
-
 // Google OAuth 인증 시작 (/auth 라우터) 
 app.get('/auth', (req, res) => {
-  const redirect_uri = process.env.REDIRECT_URI;
-  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.CLIENT_ID}&redirect_uri=${redirect_uri}&scope=https://www.googleapis.com/auth/youtube.upload%20https://www.googleapis.com/auth/drive.readonly&access_type=offline&prompt=consent`;
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  const authUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: [
+      'https://www.googleapis.com/auth/youtube.upload',
+      'https://www.googleapis.com/auth/drive',
+    ],
+    prompt: 'consent',
+    include_granted_scopes: false
+  });
 
   res.redirect(authUrl);
 });
