@@ -111,16 +111,38 @@ app.post('/upload', async (req, res) => {
      console.log('✅ 썸네일 업로드 완료');
     }
 
-    // 5. 업로드 성공 후 FINISH 폴더로 이동
-    console.log('📂 파일 FINISH 폴더로 이동 중...');
-    await moveFileToFinishFolder(fileId, isLong, auth);
-    console.log('✅ FINISH 폴더 이동 완료');
-    
-    res.status(200).send({ message: '업로드 성공', videoId });
+  // ✅ 업로드 성공 시 GAS Webhook 호출
+  try {
+    // 🎞 영상 파일 이동 (long 또는 short 구분)
+    const type = isLong ? 'long' : 'short';
+    const videoWebhookResponse = await axios.post('https://script.google.com/macros/s/AKfycbxhz0vXcryV4NPNdhdSt3AxyiHPhJuIKsH5SdlCVINZ8dh6-z8Qqi8THFVPnaShL3ascg/exec', {
+      type: type,
+      fileId: fileId,
+      originalName: metadata.fileName   // 예: '2025_07_15_04_30_long.mp4'
+    });
+    console.log('📡 영상 Webhook 호출 완료');
+    console.log('📝 영상 Webhook 응답:', videoWebhookResponse.data);
+
+    // 🖼 썸네일 Webhook 호출 (롱폼일 때만)
+    if (isLong && metadata.thumbnailFileId && metadata.thumbnailFileName) {
+      const thumbWebhookResponse = await axios.post('https://script.google.com/macros/s/AKfycbxhz0vXcryV4NPNdhdSt3AxyiHPhJuIKsH5SdlCVINZ8dh6-z8Qqi8THFVPnaShL3ascg/exec', {
+      type: 'thumbnail',
+      fileId: metadata.thumbnailFileId,
+      originalName: metadata.thumbnailFileName
+    });
+      console.log('🖼 썸네일 Webhook 호출 완료');
+      console.log('📝 썸네일 Webhook 응답:', thumbWebhookResponse.data);
+    }
   } catch (err) {
-    console.error('업로드 실패:', err.message || err);
-    res.status(500).send({ error: '업로드 중 오류 발생' });
+    console.error('⚠️ GAS Webhook 호출 실패:', err.message || err);
   }
+
+  // ✅ 클라이언트 응답
+  res.status(200).send({ message: '업로드 성공', videoId });
+    } catch (err) {
+      console.error('업로드 실패:', err.message || err);
+      res.status(500).send({ error: '업로드 중 오류 발생' });
+    }
 });
 
 // 서버 실행 
