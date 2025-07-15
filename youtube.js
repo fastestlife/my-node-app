@@ -36,28 +36,6 @@ async function uploadVideoToYouTube(auth, metadata, filePath, mimeType) {
     const videoId = response.data.id;
     console.log(`영상 업로드 성공! videoId: ${videoId}`);
 
-     // categoryId 강제 적용
-     try {
-       const categoryId = Number.isNaN(parseInt(metadata.category))
-         ? 22
-         : parseInt(metadata.category);
-
-       await youtube.videos.update({
-         part: ['snippet'],
-         requestBody: {
-           id: videoId,
-           snippet: {
-             title: metadata.title,
-             description: metadata.description,
-             tags: metadata.tags,
-             categoryId,
-           },
-         },
-       });
-       console.log('📌 categoryId 강제 적용 완료');
-     } catch (updateError) {
-       console.warn('⚠️ categoryId 업데이트 실패:', updateError.message || updateError);
-     }
 
     // 플레이리스트에 추가
     if (metadata.playlistId) {
